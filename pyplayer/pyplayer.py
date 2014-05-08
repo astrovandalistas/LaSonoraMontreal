@@ -2,13 +2,18 @@ import pygame
 from pyomxplayer import OMXPlayer
 from time import time, sleep
 
+def _checkEvent():
+    for event in pygame.event.get():
+        if ((event.type == pygame.QUIT) or 
+            (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE)):
+            raise KeyboardInterrupt
+
 def setup():
     global omx
     global background, screen, font, mSurface, mSurfaceRect
     global lastChangeTime, state, startTime
 
-    omx = OMXPlayer('./data/vids/MVI_0702.mov')
-    #omx.toggle_pause()
+    omx = OMXPlayer('./data/vids/vd1.mp4')
 
     pygame.init()
     screen = pygame.display.set_mode((0, 0), (pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE))
@@ -39,6 +44,8 @@ def loop():
     global background, screen, font, mSurface, mSurfaceRect
     global lastChangeTime, state, startTime
 
+    _checkEvent()
+
     if(time() - lastChangeTime > 2):
         lastChangeTime = time()
         background.fill((0,0,0))
@@ -52,7 +59,7 @@ def loop():
         pygame.display.flip()
     if((time() - startTime > 10) and omx and (omx.paused)):
         omx.toggle_pause()
-    if((time() - startTime > 30) and (not omx is None)):
+    if((time() - startTime > 16) and (not omx is None)):
         omx.stop()
         omx = None
 
@@ -67,5 +74,6 @@ if __name__=="__main__":
                 sleep(0.016 - loopTime)
         exit(0)
     except KeyboardInterrupt:
-        omx.stop()
+        if omx:
+            omx.stop()
         exit(0)
