@@ -4,6 +4,7 @@ import pygame
 from pyomxplayer import OMXPlayer
 from json import loads, dumps
 from urllib2 import urlopen
+from random import randrange
 from time import time, sleep, strptime, strftime
 from os import path, listdir
 
@@ -161,14 +162,19 @@ def loop():
         if omx:
             omx.stop()
 
-        ## TODO: pick a file from list
-        ##       use a filter for file type
-        ##       pop it from list so we don't pick again
-        ##       if it was the lst one, populate list again
-        pass
+        ## TODO : filter by file type !?
 
-        ## TODO: play audio/video
-        #omx = OMXPlayer('./data/vids/vd1.mp4')
+        ## pick a file from list
+        lengthOfCurrentDateFiles= len(currentDateFiles)
+        randomIndex = randrange(0,lengthOfCurrentDateFiles)
+        ## pop it from list so we don't pick again
+        fileName = currentDateFiles.pop(randomIndex)
+        ## if it was the lst one, populate list again
+        if((lengthOfCurrentDateFiles > 0) and (len(currentDateFiles) == 0)):
+            _populateFileListFromFileInfoData()
+
+        ## play audio/video
+        #omx = OMXPlayer(fileName)
         pass
 
         ## TODO: play text
