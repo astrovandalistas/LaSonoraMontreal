@@ -23,24 +23,22 @@ def _checkEvent():
             raise KeyboardInterrupt
 
 def _makeFakeJSON():
-    ## DEBUG
-    brazil0 = ['bdjdjdj.wav', 'bfoo.txt', 'bhahaha.mp3']
-    mexico0 = ['mdjdjdj.wav', 'mfoo.txt', 'mhahaha.mp3']
-    x201001 = {}
-    x201001['brazil'] = brazil0
-    x201001['mexico'] = mexico0
+    fakeData = []
+    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"bdjdjdj.wav"})
+    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"bfoo.txt"})
+    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"bhahaha.mp3"})
+    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "url":"mdjdjdj.wav"})
+    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "url":"mfoo.txt"})
+    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "url":"mhahaha.mp3"})
 
-    brazil1 = ['b1djdjdj.wav', 'b1foo.txt', 'b1hahaha.mp3']
-    mexico1 = ['m1djdjdj.wav', 'm1foo.txt', 'm1hahaha.mp3']
-    russia1 = ['r1djdjdj.wav', 'r1foo.txt', 'r1hahaha.mp3']
-    x201202 = {}
-    x201202['brazil'] = brazil1
-    x201202['mexico'] = mexico1
-    x201202['russia'] = russia1
-
-    fakeData = {}
-    fakeData['Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)'] = x201001
-    fakeData['Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)'] = x201202
+    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"b1djdjdj.wav"})
+    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"b1foo.txt"})
+    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"b1hahaha.mp3"})
+    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "url":"m1djdjdj.wav"})
+    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "url":"m1hahaha.mp3"})
+    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "url":"r1djdjdj.wav"})
+    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "url":"r1foo.txt"})
+    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "url":"r1hahaha.mp3"})
 
     return dumps(fakeData)
 
@@ -48,15 +46,14 @@ def _readAndFormatJSON(jsonFromServer):
     result = {}
     fileInfoFromServer = loads(jsonFromServer)
 
-    for d in fileInfoFromServer:
+    for d in [ e for e in fileInfoFromServer if ("fecha" in e and "lugar" in e and "url" in e) ]:
         ## "Wed May 21 2014 00:00:00 GMT-0500 (CDT)"
-        date = strftime("%Y-%m", strptime(" ".join(d.split()[:4]), "%a %b %d %Y"))
+        date = strftime("%Y-%m", strptime(" ".join(d["fecha"].split()[:4]), "%a %b %d %Y"))
         if(not date in result):
             result[date] = {}
-        for c in fileInfoFromServer[d]:
-            if(not c in result[date]):
-                result[date][c] = {}
-            result[date][c] = fileInfoFromServer[d][c]
+        if(not d["lugar"] in result[date]):
+                result[date][d["lugar"]] = []
+        result[date][d["lugar"]].append(d["url"])
 
     return result
 
