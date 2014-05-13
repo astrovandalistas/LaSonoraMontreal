@@ -4,7 +4,7 @@ import pygame
 from pyomxplayer import OMXPlayer
 from json import loads, dumps
 from urllib2 import urlopen
-from time import time, sleep
+from time import time, sleep, strptime, strftime
 from os import path, listdir
 
 SERVER_ADDRESS = "http://astrovandalistas.cc/sonoratelematica"
@@ -38,10 +38,26 @@ def _makeFakeJSON():
     x201202['russia'] = russia1
 
     fakeData = {}
-    fakeData['2010-01'] = x201001
-    fakeData['2012-02'] = x201202
+    fakeData['Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)'] = x201001
+    fakeData['Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)'] = x201202
 
     return dumps(fakeData)
+
+def _readAndFormatJSON(jsonFromServer):
+    result = {}
+    fileInfoFromServer = loads(jsonFromServer)
+
+    for d in fileInfoFromServer:
+        ## "Wed May 21 2014 00:00:00 GMT-0500 (CDT)"
+        date = strftime("%Y-%m", strptime(" ".join(d.split()[:4]), "%a %b %d %Y"))
+        if(not date in result):
+            result[date] = {}
+        for c in fileInfoFromServer[d]:
+            if(not c in result[date]):
+                result[date][c] = {}
+            result[date][c] = fileInfoFromServer[d][c]
+
+    return result
 
 def setup():
     global omx
@@ -51,8 +67,8 @@ def setup():
 
     ## TODO: rsync
 
-    #fileInfoData = loads(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO).read())
-    fileInfoData = loads(_makeFakeJSON())
+    #fileInfoData = _readAndFormatJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO).read())
+    fileInfoData = _readAndFormatJSON(_makeFakeJSON())
 
     omx = None
 
