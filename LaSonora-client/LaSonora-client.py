@@ -8,9 +8,9 @@ from random import randrange
 from time import time, sleep, strptime, strftime
 from os import path, listdir
 
-SERVER_ADDRESS = "http://astrovandalistas.cc/sonoratelematica"
-ENDPOINT_CLOCK = "reloj"
-ENDPOINT_FILEINFO = "dbinfo"
+SERVER_ADDRESS = "http://foocoop.mx:1337"
+ENDPOINT_CLOCK = "clock/currentddmmyy"
+ENDPOINT_FILEINFO = "media"
 
 MEDIA_CHANGE_FREQUENCY = 3
 LOCATION_FILTER = ["mexico", "russia"]
@@ -24,21 +24,21 @@ def _checkEvent():
 
 def _makeFakeJSON():
     fakeData = []
-    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"bdjdjdj.wav"})
-    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"bfoo.txt"})
-    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"bhahaha.mp3"})
-    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "url":"mdjdjdj.wav"})
-    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "url":"mfoo.txt"})
-    fakeData.append({"fecha": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "url":"mhahaha.mp3"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"bdjdjdj.wav"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"bfoo.txt"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"bhahaha.mp3"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "filename":"mdjdjdj.wav"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "filename":"mfoo.txt"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "filename":"mhahaha.mp3"})
 
-    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"b1djdjdj.wav"})
-    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"b1foo.txt"})
-    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "url":"b1hahaha.mp3"})
-    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "url":"m1djdjdj.wav"})
-    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "url":"m1hahaha.mp3"})
-    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "url":"r1djdjdj.wav"})
-    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "url":"r1foo.txt"})
-    fakeData.append({"fecha": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "url":"r1hahaha.mp3"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"b1djdjdj.wav"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"b1foo.txt"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"b1hahaha.mp3"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "filename":"m1djdjdj.wav"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "filename":"m1hahaha.mp3"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "filename":"r1djdjdj.wav"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "filename":"r1foo.txt"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "filename":"r1hahaha.mp3"})
 
     return dumps(fakeData)
 
@@ -46,14 +46,14 @@ def _readAndFormatJSON(jsonFromServer):
     result = {}
     fileInfoFromServer = loads(jsonFromServer)
 
-    for d in [ e for e in fileInfoFromServer if ("fecha" in e and "lugar" in e and "url" in e) ]:
+    for d in [ e for e in fileInfoFromServer if ("date" in e and "lugar" in e and "filename" in e) ]:
         ## "Wed May 21 2014 00:00:00 GMT-0500 (CDT)"
-        date = strftime("%Y-%m", strptime(" ".join(d["fecha"].split()[:4]), "%a %b %d %Y"))
+        date = strftime("%Y-%m", strptime(" ".join(d["date"].split()[:4]), "%a %b %d %Y"))
         if(not date in result):
             result[date] = {}
         if(not d["lugar"] in result[date]):
                 result[date][d["lugar"]] = []
-        result[date][d["lugar"]].append(d["url"])
+        result[date][d["lugar"]].append(d["filename"])
 
     return result
 
@@ -91,7 +91,7 @@ def setup():
     mSurfaceRect = mSurface.get_rect(centerx=background.get_width()/2,
                                      centery=background.get_height()/2)
 
-    lastMediaChangeTime = time()
+    lastMediaChangeTime = time()-MEDIA_CHANGE_FREQUENCY
     currentDateValue = "1900-00"
     currentDateFiles = []
 
@@ -145,9 +145,9 @@ def loop():
     background.fill((0,0,0))
 
     if(time() - lastMediaChangeTime > MEDIA_CHANGE_FREQUENCY):
-        ## TODO: make request to server, get JSON
-        #inDateValue = loads(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_CLOCK).read())['reloj']
-        inDateValue = "2010-01"
+        ## make request to server, get clock
+        inDateValueList = loads(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_CLOCK).read()).split('/')
+        inDateValue = inDateValueList[2]+'-'+inDateValueList[1]
 
         ## if a new date, populate list
         if(not inDateValue is currentDateValue):
@@ -162,13 +162,14 @@ def loop():
         ## TODO : filter by file type !?
 
         ## pick a file from list
-        lengthOfCurrentDateFiles= len(currentDateFiles)
-        randomIndex = randrange(0,lengthOfCurrentDateFiles)
-        ## pop it from list so we don't pick again
-        fileName = currentDateFiles.pop(randomIndex)
-        ## if it was the lst one, populate list again
-        if((lengthOfCurrentDateFiles > 0) and (len(currentDateFiles) == 0)):
-            _populateFileListFromFileInfoData()
+        lengthOfCurrentDateFiles = len(currentDateFiles)
+        if(lengthOfCurrentDateFiles > 0):
+            randomIndex = randrange(0,lengthOfCurrentDateFiles)
+            ## pop it from list so we don't pick again
+            fileName = currentDateFiles.pop(randomIndex)
+            ## was > 0, but now 0
+            if(len(currentDateFiles) == 0):
+                _populateFileListFromFileInfoData()
 
         ## play audio/video
         #omx = OMXPlayer(fileName)
