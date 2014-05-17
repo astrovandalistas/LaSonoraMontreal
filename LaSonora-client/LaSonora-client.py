@@ -24,21 +24,21 @@ def _checkEvent():
 
 def _makeFakeJSON():
     fakeData = []
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"bdjdjdj.wav"})
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"bfoo.txt"})
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"bhahaha.mp3"})
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "filename":"mdjdjdj.wav"})
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "filename":"mfoo.txt"})
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "filename":"mhahaha.mp3"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "country":"brazil", "filename":"bdjdjdj.wav"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "country":"brazil", "filename":"bfoo.txt"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "country":"brazil", "filename":"bhahaha.mp3"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "country":"mexico", "filename":"mdjdjdj.wav"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "country":"mexico", "filename":"mfoo.txt"})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "country":"mexico", "filename":"mhahaha.mp3"})
 
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"b1djdjdj.wav"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"b1foo.txt"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"brazil", "filename":"b1hahaha.mp3"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "filename":"m1djdjdj.wav"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"mexico", "filename":"m1hahaha.mp3"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "filename":"r1djdjdj.wav"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "filename":"r1foo.txt"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "lugar":"russia", "filename":"r1hahaha.mp3"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"brazil", "filename":"b1djdjdj.wav"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"brazil", "filename":"b1foo.txt"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"brazil", "filename":"b1hahaha.mp3"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"mexico", "filename":"m1djdjdj.wav"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"mexico", "filename":"m1hahaha.mp3"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"russia", "filename":"r1djdjdj.wav"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"russia", "filename":"r1foo.txt"})
+    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"russia", "filename":"r1hahaha.mp3"})
 
     return dumps(fakeData)
 
@@ -46,14 +46,14 @@ def _readAndFormatJSON(jsonFromServer):
     result = {}
     fileInfoFromServer = loads(jsonFromServer)
 
-    for d in [ e for e in fileInfoFromServer if ("date" in e and "lugar" in e and "filename" in e) ]:
+    for d in [ e for e in fileInfoFromServer if ("date" in e and "country" in e and "filename" in e) ]:
         ## "Wed May 21 2014 00:00:00 GMT-0500 (CDT)"
         date = strftime("%Y-%m", strptime(" ".join(d["date"].split()[:4]), "%a %b %d %Y"))
         if(not date in result):
             result[date] = {}
-        if(not d["lugar"] in result[date]):
-                result[date][d["lugar"]] = []
-        result[date][d["lugar"]].append(d["filename"])
+        if(not d["country"] in result[date]):
+                result[date][d["country"]] = []
+        result[date][d["country"]].append(d["filename"])
 
     return result
 
