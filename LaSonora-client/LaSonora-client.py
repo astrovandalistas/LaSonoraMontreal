@@ -11,6 +11,7 @@ from os import path, listdir
 SERVER_ADDRESS = "http://foocoop.mx:1337"
 ENDPOINT_CLOCK = "clock/currentddmmyy"
 ENDPOINT_FILEINFO = "media"
+ENDPOINT_ARCHIVE = "uploads"
 
 MEDIA_CHANGE_FREQUENCY = 3
 LOCATION_FILTER = ["mexico", "russia"]
@@ -47,6 +48,12 @@ def _readAndFormatJSON(jsonFromServer):
     fileInfoFromServer = loads(jsonFromServer)
 
     for d in [ e for e in fileInfoFromServer if ("date" in e and "country" in e and "filename" in e) ]:
+        ## keep files consistent with server db
+        if(not path.isfile('./data/'+d['filename'])):
+            f = open('./data/'+d['filename'], 'wb')
+            f.write(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_ARCHIVE+"/"+d['filename']).read())
+            f.close()
+
         ## "Wed May 21 2014 00:00:00 GMT-0500 (CDT)"
         date = strftime("%Y-%m", strptime(" ".join(d["date"].split()[:4]), "%a %b %d %Y"))
         if(not date in result):
@@ -63,10 +70,8 @@ def setup():
     global lastMediaChangeTime, currentDateValue, currentDateFiles
     global fileInfoData
 
-    ## TODO: rsync
-
-    #fileInfoData = _readAndFormatJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO).read())
-    fileInfoData = _readAndFormatJSON(_makeFakeJSON())
+    fileInfoData = _readAndFormatJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO).read())
+    #fileInfoData = _readAndFormatJSON(_makeFakeJSON())
 
     omx = None
 
