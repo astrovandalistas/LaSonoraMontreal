@@ -1,2 +1,4 @@
 *webplayer/
 */data/vids/*.mov
+.DS*
+*.pyc
