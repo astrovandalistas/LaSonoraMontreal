@@ -115,8 +115,7 @@ def stopAudio(audioPlayer):
             audioPlayer.stdin.write('q')
         except:
             print "couldn't close mplayer. already closed?"
-        finally:
-            audioPlayer = None
+        audioPlayer = None
 def stopVideo(videoPlayer):
     if(videoPlayer):
         videoPlayer.stop()
