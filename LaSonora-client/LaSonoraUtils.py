@@ -2,6 +2,7 @@ from json import loads, dumps
 from os import path, listdir, remove
 from urllib2 import urlopen
 from peewee import *
+import pygame
 
 SERVER_ADDRESS = "http://foocoop.mx:1337"
 ENDPOINT_CLOCK = "clock/currentddmmyy"
@@ -64,6 +65,29 @@ def loadDbFromJSON(jsonFromServer):
                             date = d['date'],
                             country = d['country'])
     return MediaFileDb
+
+def initScreen():
+    pygame.init()
+
+    #screen = pygame.display.set_mode((0, 0), (pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE))
+    screen = pygame.display.set_mode((0, 0), (pygame.DOUBLEBUF|pygame.HWSURFACE))
+    pygame.display.set_caption('LaSonora')
+    pygame.mouse.set_visible(False)
+
+    background = pygame.Surface(screen.get_size())
+    background = background.convert()
+    background.fill((0,0,0))
+
+    font = pygame.font.Font("./data/arial.ttf", 800)
+    screen.blit(background, (0, 0))
+    pygame.display.flip()
+
+    mSurface = font.render("La Sonora Telematica ", 1, (200,200,200), (0,0,0))
+    mSurfaceRect = mSurface.get_rect()
+    scale = min(float(background.get_width())/mSurfaceRect.width, float(mSurfaceRect.width)/background.get_width())
+    mSurface = pygame.transform.scale(mSurface,(int(scale*mSurfaceRect.width),int(scale*mSurfaceRect.height)))
+    mSurfaceRect = mSurface.get_rect(centerx=background.get_width()/2,
+                                     centery=background.get_height()/2)
 
 def _makeFakeJSON():
     fakeData = []

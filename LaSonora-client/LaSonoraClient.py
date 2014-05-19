@@ -2,6 +2,7 @@
 
 from LaSonoraUtils import populateFileListFromDbAndTag, loadDbFromJSON, _makeFakeJSON
 from LaSonoraUtils import SERVER_ADDRESS, ENDPOINT_CLOCK, ENDPOINT_FILEINFO, ENDPOINT_ARCHIVE
+from LaSonoraUtils import initScreen
 import pygame
 #from pyomxplayer import OMXPlayer
 from json import loads
@@ -28,26 +29,7 @@ def setup():
 
     omx = None
 
-    pygame.init()
-    #screen = pygame.display.set_mode((0, 0), (pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE))
-    screen = pygame.display.set_mode((0, 0), (pygame.DOUBLEBUF|pygame.HWSURFACE))
-    pygame.display.set_caption('LaSonora')
-    pygame.mouse.set_visible(False)
-
-    background = pygame.Surface(screen.get_size())
-    background = background.convert()
-    background.fill((0,0,0))
-
-    font = pygame.font.Font("./data/arial.ttf", 800)
-    screen.blit(background, (0, 0))
-    pygame.display.flip()
-
-    mSurface = font.render("La Sonora Telematica ", 1, (200,200,200), (0,0,0))
-    mSurfaceRect = mSurface.get_rect()
-    scale = min(float(background.get_width())/mSurfaceRect.width, float(mSurfaceRect.width)/background.get_width())
-    mSurface = pygame.transform.scale(mSurface,(int(scale*mSurfaceRect.width),int(scale*mSurfaceRect.height)))
-    mSurfaceRect = mSurface.get_rect(centerx=background.get_width()/2,
-                                     centery=background.get_height()/2)
+    initScreen()
 
     lastMediaChangeTime = time()-MEDIA_CHANGE_FREQUENCY
     currentState = "ice"
@@ -60,7 +42,6 @@ def loop():
     global fileInfoDb
 
     _checkEvent()
-    background.fill((0,0,0))
 
     if(time() - lastMediaChangeTime > MEDIA_CHANGE_FREQUENCY):
         ## make request to server, get clock
