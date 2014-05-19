@@ -2,7 +2,7 @@
 
 from LaSonoraUtils import populateFileListFromDbAndTag, loadDbFromJSON, _makeFakeJSON
 from LaSonoraUtils import SERVER_ADDRESS, ENDPOINT_CLOCK, ENDPOINT_FILEINFO, ENDPOINT_ARCHIVE
-from LaSonoraUtils import initScreen
+from LaSonoraUtils import initScreen, stopAudio, stopVideo, clearScreen, playAudio, playVideo, displayImage, displayText
 import pygame
 #from pyomxplayer import OMXPlayer
 from json import loads
@@ -19,15 +19,15 @@ def _checkEvent():
             raise KeyboardInterrupt
 
 def setup():
-    global omx
-    global background, screen, font, mSurface, mSurfaceRect
+    global video, audio
     global lastMediaChangeTime, currentState, currentFileList
     global fileInfoDb
 
     #fileInfoDb = loadDbFromJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO).read())
     fileInfoDb = loadDbFromJSON(_makeFakeJSON())
 
-    omx = None
+    video = None
+    audio = None
 
     initScreen()
 
@@ -36,8 +36,7 @@ def setup():
     currentFileList = []
 
 def loop():
-    global omx
-    global background, screen, font, mSurface, mSurfaceRect
+    global video, audio
     global lastMediaChangeTime, currentState, currentFileList
     global fileInfoDb
 
@@ -51,27 +50,32 @@ def loop():
         ## if a new date, populate list
         if(not inState is currentState):
             currentState = inState
-            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["audio", "video", "text"])
+            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["image"])
         lastMediaChangeTime = time()
 
-        ## TODO : filter by file type !?
-
         ## pick a file from list
+        nextFile = ()
         lengthOfCurrentFileList = len(currentFileList)
         if(lengthOfCurrentFileList > 0):
             randomIndex = randrange(0,lengthOfCurrentFileList)
             ## pop it from list so we don't pick again
-            fileName = currentFileList.pop(randomIndex)
+            nextFile = currentFileList.pop(randomIndex)
             ## was > 0, but now 0
             if(len(currentFileList) == 0):
-                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["audio", "video", "text"])
+                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["image"])
 
-        ## play audio/video
-        #omx = OMXPlayer(fileName)
-        pass
+        stopAudio(audio)
+        stopVideo(video)
+        clearScreen()
 
-        ## TODO: play text
-        pass
+        if(nextFile[0] == "audio"):
+            audio = playAudio(nextFile[1])
+        elif(nextFile[0] == "video"):
+            video = playVideo(nextFile[1], fileInfoDb)
+        elif(nextFile[0] == "image"):
+            displayImage(nextFile[1])
+        elif(nextFile[0] == "text"):
+            displayText(nextFile[1])
 
 if __name__=="__main__":
     setup()
@@ -84,6 +88,7 @@ if __name__=="__main__":
                 sleep(0.016 - loopTime)
         exit(0)
     except KeyboardInterrupt:
-        if omx:
-            omx.stop()
+        stopAudio(audio)
+        stopVideo(video)
+        clearScreen()
         exit(0)

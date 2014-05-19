@@ -2,6 +2,7 @@ from json import loads, dumps
 from os import path, listdir, remove
 from urllib2 import urlopen
 from peewee import *
+from subprocess import Popen, PIPE
 import pygame
 
 SERVER_ADDRESS = "http://foocoop.mx:1337"
@@ -27,7 +28,10 @@ def populateFileListFromDbAndTag(dataBase, tag, mediaTypes):
     dataPath = "./data"
     for f in dataBase.select().where(MediaFileDb.waterType == tag):
         if(f.mediaType in mediaTypes):
-            currentFiles.append((dataPath+"/"+f.fileName, f.mediaType))
+            if(f.mediaType is "text"):
+                currentFiles.append((f.mediaType, f.contentText))
+            else:
+                currentFiles.append((f.mediaType, dataPath+"/"+f.fileName))
 
     ## print what we got
     print "current files: %s" % (currentFiles)
@@ -44,6 +48,7 @@ def loadDbFromJSON(jsonFromServer):
                 "country" in e and
                 "filename" in e and
                 "waterType" in e and
+                "contentText" in e and
                 "title" in e and
                 "mediaType" in e and
                 "contentType" in e and
@@ -66,24 +71,26 @@ def loadDbFromJSON(jsonFromServer):
                             contentType = d['contentType'],
                             title = d['title'],
                             date = d['date'],
+                            contentText = d['contentText'],
                             mediaType = d['mediaType'],
                             country = d['country'])
     return MediaFileDb
 
 def initScreen():
+    global pyScreen, font, mSurface, mSurfaceRect
     pygame.init()
 
-    #screen = pygame.display.set_mode((0, 0), (pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE))
-    screen = pygame.display.set_mode((0, 0), (pygame.DOUBLEBUF|pygame.HWSURFACE))
+    #pyScreen = pygame.display.set_mode((0, 0), (pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE))
+    pyScreen = pygame.display.set_mode((0, 0), (pygame.DOUBLEBUF|pygame.HWSURFACE))
     pygame.display.set_caption('LaSonora')
     pygame.mouse.set_visible(False)
 
-    background = pygame.Surface(screen.get_size())
+    background = pygame.Surface(pyScreen.get_size())
     background = background.convert()
     background.fill((0,0,0))
 
     font = pygame.font.Font("./data/arial.ttf", 800)
-    screen.blit(background, (0, 0))
+    pyScreen.blit(background, (0, 0))
     pygame.display.flip()
 
     mSurface = font.render("La Sonora Telematica ", 1, (200,200,200), (0,0,0))
@@ -93,6 +100,32 @@ def initScreen():
     mSurfaceRect = mSurface.get_rect(centerx=background.get_width()/2,
                                      centery=background.get_height()/2)
 
+def clearScreen():
+    global pyScreen
+    background = pygame.Surface(pyScreen.get_size())
+    background = background.convert()
+    background.fill((0,0,0))
+    pyScreen.blit(background, (0, 0))
+    pygame.display.flip()
+def stopAudio(audioPlayer):
+    if(audioPlayer):
+        audioPlayer.stdin.write('q')
+def stopVideo(videoPlayer):
+    if(videoPlayer):
+        videoPlayer.stop()
+def playAudio(fileName):
+    return Popen(["mplayer", fileName], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+def playVideo(fileName, db):
+    pass
+def displayImage(fileName):
+    background = pygame.Surface(pyScreen.get_size())
+    img=pygame.image.load(fileName)
+    imgRect = img.get_rect()
+    pyScreen.blit(img,((background.get_width()-imgRect.width)/2 ,(background.get_height()-imgRect.height)/2))
+    pygame.display.flip()
+def displayText(text):
+    pass
+
 def _makeFakeJSON():
     fakeData = []
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
@@ -101,11 +134,13 @@ def _makeFakeJSON():
                     "waterType":"boiling",
                     "contentType":"water",
                     "mediaType":"video",
+                    "contentText":"hello hello text test",
                     "title":"foo video 1",
                     "hassound":True})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "filename":"b1.mov",
+                    "contentText":"hello hello text test",
                     "waterType":"boiling",
                     "contentType":"water",
                     "mediaType":"video",
@@ -117,16 +152,36 @@ def _makeFakeJSON():
                     "waterType":"boiling",
                     "contentType":"water",
                     "mediaType":"audio",
+                    "contentText":"hello hello text test",
                     "title":"fooo audio",
                     "hassound":True})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
-                    "filename":"b0j.jpg",
+                    "filename":"image0.jpg",
                     "waterType":"ice",
                     "contentType":"water",
                     "mediaType":"image",
+                    "contentText":"hello hello text test",
                     "title":"hey hey hey image",
-                    "hassound":True})
+                    "hassound":False})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
+                    "country":"brazil",
+                    "filename":"image1.jpg",
+                    "waterType":"boiling",
+                    "contentType":"water",
+                    "mediaType":"image",
+                    "contentText":"hello hello text test",
+                    "title":"hey hey hey image",
+                    "hassound":False})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
+                    "country":"brazil",
+                    "filename":"image2.jpg",
+                    "waterType":"boiling",
+                    "contentType":"water",
+                    "mediaType":"image",
+                    "contentText":"hello hello text test",
+                    "title":"hey hey hey image",
+                    "hassound":False})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "waterType":"rain",
