@@ -1,21 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from LaSonoraUtils import populateFileListFromFileInfoData, readAndFormatJSON, _makeFakeJSON
+from LaSonoraUtils import populateFileListFromDbAndTag, loadDbFromJSON, _makeFakeJSON
+from LaSonoraUtils import SERVER_ADDRESS, ENDPOINT_CLOCK, ENDPOINT_FILEINFO, ENDPOINT_ARCHIVE
 import pygame
-from pyomxplayer import OMXPlayer
+#from pyomxplayer import OMXPlayer
 from json import loads
 from urllib2 import urlopen
 from random import randrange
 from time import time, sleep, strptime, strftime
 
-SERVER_ADDRESS = "http://foocoop.mx:1337"
-ENDPOINT_CLOCK = "clock/currentddmmyy"
-ENDPOINT_FILEINFO = "media"
-ENDPOINT_ARCHIVE = "uploads"
-
 MEDIA_CHANGE_FREQUENCY = 3
-LOCATION_FILTER = ["mexico", "russia"]
-DATE_FILTER = ["2010-01", "2012-02"]
 
 def _checkEvent():
     for event in pygame.event.get():
@@ -26,11 +20,11 @@ def _checkEvent():
 def setup():
     global omx
     global background, screen, font, mSurface, mSurfaceRect
-    global lastMediaChangeTime, currentDateValue, currentDateFiles
-    global fileInfoData
+    global lastMediaChangeTime, currentState, currentFileList
+    global fileInfoDb
 
-    fileInfoData = readAndFormatJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO).read())
-    #fileInfoData = _readAndFormatJSON(_makeFakeJSON())
+    #fileInfoDb = loadDbFromJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO).read())
+    fileInfoDb = loadDbFromJSON(_makeFakeJSON())
 
     omx = None
 
@@ -56,27 +50,27 @@ def setup():
                                      centery=background.get_height()/2)
 
     lastMediaChangeTime = time()-MEDIA_CHANGE_FREQUENCY
-    currentDateValue = "1900-00"
-    currentDateFiles = []
+    currentState = "ice"
+    currentFileList = []
 
 def loop():
     global omx
     global background, screen, font, mSurface, mSurfaceRect
-    global lastMediaChangeTime, currentDateValue, currentDateFiles
-    global fileInfoData
+    global lastMediaChangeTime, currentState, currentFileList
+    global fileInfoDb
 
     _checkEvent()
     background.fill((0,0,0))
 
     if(time() - lastMediaChangeTime > MEDIA_CHANGE_FREQUENCY):
         ## make request to server, get clock
-        inDateValueList = loads(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_CLOCK).read()).split('/')
-        inDateValue = inDateValueList[2]+'-'+inDateValueList[1]
+        #inState = loads(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_CLOCK).read())
+        inState = "boiling"
 
         ## if a new date, populate list
-        if(not inDateValue is currentDateValue):
-            currentDateValue = inDateValue    
-            currentDateFiles = populateFileListFromFileInfoData(currentDateValue, fileInfoData)
+        if(not inState is currentState):
+            currentState = inState
+            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState)
         lastMediaChangeTime = time()
 
         ## TODO: fade out ??
@@ -86,14 +80,14 @@ def loop():
         ## TODO : filter by file type !?
 
         ## pick a file from list
-        lengthOfCurrentDateFiles = len(currentDateFiles)
-        if(lengthOfCurrentDateFiles > 0):
-            randomIndex = randrange(0,lengthOfCurrentDateFiles)
+        lengthOfCurrentFileList = len(currentFileList)
+        if(lengthOfCurrentFileList > 0):
+            randomIndex = randrange(0,lengthOfCurrentFileList)
             ## pop it from list so we don't pick again
-            fileName = currentDateFiles.pop(randomIndex)
+            fileName = currentFileList.pop(randomIndex)
             ## was > 0, but now 0
-            if(len(currentDateFiles) == 0):
-                currentDateFiles = populateFileListFromFileInfoData(currentDateValue, fileInfoData)
+            if(len(currentFileList) == 0):
+                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState)
 
         ## play audio/video
         #omx = OMXPlayer(fileName)
