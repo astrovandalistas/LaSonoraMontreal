@@ -115,7 +115,6 @@ def stopAudio(audioPlayer):
             audioPlayer.stdin.write('q')
         except:
             print "couldn't close mplayer. already closed?"
-        audioPlayer = None
 def stopVideo(videoPlayer):
     if(videoPlayer):
         videoPlayer.stop()
@@ -199,6 +198,15 @@ def _makeFakeJSON():
                     "mediaType":"audio",
                     "contentText":"hello hello text test",
                     "title":"fooo audio",
+                    "hassound":True})
+    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
+                    "country":"brazil",
+                    "filename":"sound1.mp3",
+                    "waterType":"boiling",
+                    "contentType":"water",
+                    "mediaType":"audio",
+                    "contentText":"hello hello text test",
+                    "title":"fooo audio 1",
                     "hassound":True})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
