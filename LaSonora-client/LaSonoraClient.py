@@ -8,7 +8,7 @@ import pygame
 from json import loads
 from urllib2 import urlopen
 from random import randrange
-from time import time, sleep, strptime, strftime
+from time import time, sleep
 
 MEDIA_CHANGE_FREQUENCY = 3
 
@@ -51,12 +51,8 @@ def loop():
         ## if a new date, populate list
         if(not inState is currentState):
             currentState = inState
-            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState)
+            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["audio", "video", "text"])
         lastMediaChangeTime = time()
-
-        ## TODO: fade out ??
-        if omx:
-            omx.stop()
 
         ## TODO : filter by file type !?
 
@@ -68,7 +64,7 @@ def loop():
             fileName = currentFileList.pop(randomIndex)
             ## was > 0, but now 0
             if(len(currentFileList) == 0):
-                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState)
+                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["audio", "video", "text"])
 
         ## play audio/video
         #omx = OMXPlayer(fileName)

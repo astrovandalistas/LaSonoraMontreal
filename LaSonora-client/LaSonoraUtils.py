@@ -12,20 +12,22 @@ ENDPOINT_ARCHIVE = "uploads"
 class MediaFileDb(Model):
     fileName = CharField()
     hasSound = BooleanField()
-    waterState = CharField()
-    typeOfMedia = CharField()
+    waterType = CharField()
+    mediaType = CharField()
+    contentType = CharField()
     title = BlobField()
     date = CharField()
     country = CharField()
     class Meta:
         database = SqliteDatabase('./data/tmp.db')
 
-def populateFileListFromDbAndTag(dataBase, tag):
+def populateFileListFromDbAndTag(dataBase, tag, mediaTypes):
     currentFiles = []
 
     dataPath = "./data"
-    for f in dataBase.select().where(MediaFileDb.waterState == tag):
-        currentFiles.append(dataPath+"/"+f.fileName)
+    for f in dataBase.select().where(MediaFileDb.waterType == tag):
+        if(f.mediaType in mediaTypes):
+            currentFiles.append((dataPath+"/"+f.fileName, f.mediaType))
 
     ## print what we got
     print "current files: %s" % (currentFiles)
@@ -41,9 +43,10 @@ def loadDbFromJSON(jsonFromServer):
         return ("date" in e and
                 "country" in e and
                 "filename" in e and
-                "waterstate" in e and
+                "waterType" in e and
                 "title" in e and
-                "typeofmedia" in e and
+                "mediaType" in e and
+                "contentType" in e and
                 "hassound" in e)
 
     for d in [ e for e in fileInfoFromServer if isValidEntry(e)]:
@@ -59,10 +62,11 @@ def loadDbFromJSON(jsonFromServer):
 
         MediaFileDb.create(fileName = d['filename'],
                             hasSound = (d['hassound'] is "True"),
-                            waterState = d['waterstate'],
-                            typeOfMedia = d['typeofmedia'],
+                            waterType = d['waterType'],
+                            contentType = d['contentType'],
                             title = d['title'],
                             date = d['date'],
+                            mediaType = d['mediaType'],
                             country = d['country'])
     return MediaFileDb
 
@@ -94,36 +98,41 @@ def _makeFakeJSON():
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "filename":"b0.mov",
-                    "waterstate":"boiling",
-                    "typeofmedia":"water",
+                    "waterType":"boiling",
+                    "contentType":"water",
+                    "mediaType":"video",
                     "title":"foo video 1",
                     "hassound":True})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "filename":"b1.mov",
-                    "waterstate":"boiling",
-                    "typeofmedia":"water",
+                    "waterType":"boiling",
+                    "contentType":"water",
+                    "mediaType":"video",
                     "title":"foo video 2",
                     "hassound":False})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "filename":"b0w.wav",
-                    "waterstate":"boiling",
-                    "typeofmedia":"water",
+                    "waterType":"boiling",
+                    "contentType":"water",
+                    "mediaType":"audio",
                     "title":"fooo audio",
                     "hassound":True})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "filename":"b0j.jpg",
-                    "waterstate":"ice",
-                    "typeofmedia":"water",
+                    "waterType":"ice",
+                    "contentType":"water",
+                    "mediaType":"image",
                     "title":"hey hey hey image",
                     "hassound":True})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
-                    "filename":"b0m.mp4",
-                    "waterstate":"rain",
-                    "typeofmedia":"water",
+                    "waterType":"rain",
+                    "contentType":"water",
+                    "mediaType":"text",
+                    "contentText":"hello hello text test",
                     "title":"foo video 4",
                     "hassound":False})
 
