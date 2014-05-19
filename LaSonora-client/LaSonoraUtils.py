@@ -111,7 +111,10 @@ def clearScreen():
     pygame.display.flip()
 def stopAudio(audioPlayer):
     if(audioPlayer):
-        audioPlayer.stdin.write('q')
+        try:
+            audioPlayer.stdin.write('q')
+        except:
+            print "couldn't close mplayer. already closed?"
 def stopVideo(videoPlayer):
     if(videoPlayer):
         videoPlayer.stop()
@@ -189,7 +192,7 @@ def _makeFakeJSON():
                     "hassound":False})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
-                    "filename":"b0w.wav",
+                    "filename":"sound0.mp3",
                     "waterType":"boiling",
                     "contentType":"water",
                     "mediaType":"audio",
