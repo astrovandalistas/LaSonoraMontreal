@@ -2,3 +2,11 @@
 */data/vids/*.mov
 .DS*
 *.pyc
+*/data/*.mp4
+*/data/*.mov
+*/data/*.mp3
+*/data/*.ogg
+*/data/*.wav
+*/data/*.db
+*/data/*.jpg
+*/data/*.png
