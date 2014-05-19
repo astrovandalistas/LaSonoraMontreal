@@ -174,16 +174,7 @@ def _makeFakeJSON():
     fakeData = []
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
-                    "filename":"b0.mov",
-                    "waterType":"boiling",
-                    "contentType":"water",
-                    "mediaType":"video",
-                    "contentText":"hello hello text test",
-                    "title":"foo video 1",
-                    "hassound":True})
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
-                    "country":"brazil",
-                    "filename":"b1.mov",
+                    "filename":"movie0.MOV",
                     "contentText":"hello hello text test",
                     "waterType":"boiling",
                     "contentType":"water",
