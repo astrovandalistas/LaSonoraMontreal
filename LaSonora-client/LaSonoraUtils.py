@@ -5,6 +5,7 @@ from urllib2 import urlopen
 from peewee import *
 from subprocess import Popen, PIPE
 import pygame
+from pyomxplayer import OMXPlayer
 
 SERVER_ADDRESS = "http://foocoop.mx:1337"
 ENDPOINT_CLOCK = "clock/currentddmmyy"
@@ -117,11 +118,16 @@ def stopAudio(audioPlayer):
             print "couldn't close mplayer. already closed?"
 def stopVideo(videoPlayer):
     if(videoPlayer):
-        videoPlayer.stop()
+        try:
+            videoPlayer.stop()
+        except:
+            print "couldn't stop omxplayer. already stopped?"
 def playAudio(fileName):
     return Popen(["mplayer", fileName], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 def playVideo(fileName, db):
-    pass
+    p = OMXPlayer(fileName)
+    p.toggle_pause()
+    return p
 def displayImage(fileName):
     background = pygame.Surface(pyScreen.get_size())
     img=pygame.image.load(fileName)

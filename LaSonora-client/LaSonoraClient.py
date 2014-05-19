@@ -4,7 +4,6 @@ from LaSonoraUtils import populateFileListFromDbAndTag, loadDbFromJSON, _makeFak
 from LaSonoraUtils import SERVER_ADDRESS, ENDPOINT_CLOCK, ENDPOINT_FILEINFO, ENDPOINT_ARCHIVE
 from LaSonoraUtils import initScreen, stopAudio, stopVideo, clearScreen, playAudio, playVideo, displayImage, displayText
 import pygame
-#from pyomxplayer import OMXPlayer
 from json import loads
 from urllib2 import urlopen
 from random import randrange
@@ -50,7 +49,7 @@ def loop():
         ## if a new date, populate list
         if(not inState is currentState):
             currentState = inState
-            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["image", "text", "audio"])
+            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["video"])
         lastMediaChangeTime = time()
 
         ## pick a file from list
@@ -62,7 +61,7 @@ def loop():
             nextFile = currentFileList.pop(randomIndex)
             ## was > 0, but now 0
             if(len(currentFileList) == 0):
-                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["image", "text", "audio"])
+                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["video"])
 
         stopAudio(audio)
         stopVideo(video)
