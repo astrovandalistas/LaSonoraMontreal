@@ -8,42 +8,16 @@ ENDPOINT_CLOCK = "clock/currentddmmyy"
 ENDPOINT_FILEINFO = "media"
 ENDPOINT_ARCHIVE = "uploads"
 
-def populateFileListFromLocalDir(currentDateValue, filterDate, filterLocation):
-    currentDateFiles = []
-
-    datePath = "./data/"+currentDateValue
-    if(path.isdir(datePath)):
-        ## if no country filter, but date, pick from all countries
-        if((not filterLocation) and (currentDateValue in filterDate)):
-            locations = [ l for l in listdir(datePath) if path.isdir(datePath+"/"+l)]
-            for l in locations:
-                currentDateFiles.extend([datePath+"/"+l+"/"+f for f in listdir(datePath+"/"+l) if path.isfile(datePath+"/"+l+"/"+f)])
-        ## country filter 
-        for l in filterLocation:
-            if(path.isdir(datePath+"/"+l)):
-                currentDateFiles.extend([datePath+"/"+l+"/"+f for f in listdir(datePath+"/"+l) if path.isfile(datePath+"/"+l+"/"+f)])
-
-    ## print what we got
-    print "files: %s" % (currentDateFiles)
-    return currentDateFiles
-
-def populateFileListFromFileInfoDataAndFilters(currentDateValue, fileInfoData, filterDate, filterLocation):
-    currentDateFiles = []
-
-    dataPath = "./data"
-    if(currentDateValue in fileInfoData):
-        ## if no country filter, but date, pick from all countries
-        if((not filterLocation) and (currentDateValue in filterDate)):
-            for l in fileInfoData[currentDateValue]:
-                currentDateFiles.extend([dataPath+"/"+f for f in fileInfoData[currentDateValue][l]])
-        ## country filter
-        for l in filterLocation:
-            if(l in fileInfoData[currentDateValue]):
-                currentDateFiles.extend([dataPath+"/"+f for f in fileInfoData[currentDateValue][l]])
-
-    ## print what we got
-    print "files: %s" % (currentDateFiles)
-    return currentDateFiles
+class MediaFileDb(Model):
+    fileName = CharField()
+    hasSound = BooleanField()
+    waterState = CharField()
+    typeOfMedia = CharField()
+    title = BlobField()
+    date = CharField()
+    country = CharField()
+    class Meta:
+        database = SqliteDatabase('./data/tmp.db')
 
 def populateFileListFromDbAndTag(dataBase, tag):
     currentFiles = []
@@ -55,17 +29,6 @@ def populateFileListFromDbAndTag(dataBase, tag):
     ## print what we got
     print "current files: %s" % (currentFiles)
     return currentFiles
-
-class MediaFileDb(Model):
-    fileName = CharField()
-    hasSound = BooleanField()
-    waterState = CharField()
-    typeOfMedia = CharField()
-    title = BlobField()
-    date = CharField()
-    country = CharField()
-    class Meta:
-        database = SqliteDatabase('./data/tmp.db')
 
 def loadDbFromJSON(jsonFromServer):
     if(path.isfile('./data/tmp.db')):
@@ -101,27 +64,6 @@ def loadDbFromJSON(jsonFromServer):
                             date = d['date'],
                             country = d['country'])
     return MediaFileDb
-
-def readAndFormatJSON(jsonFromServer):
-    result = {}
-    fileInfoFromServer = loads(jsonFromServer)
-
-    for d in [ e for e in fileInfoFromServer if ("date" in e and "country" in e and "filename" in e) ]:
-        ## keep files consistent with server db
-        if(not path.isfile('./data/'+d['filename'])):
-            f = open('./data/'+d['filename'], 'wb')
-            f.write(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_ARCHIVE+"/"+d['filename']).read())
-            f.close()
-
-        ## "Wed May 21 2014 00:00:00 GMT-0500 (CDT)"
-        date = strftime("%Y-%m", strptime(" ".join(d["date"].split()[:4]), "%a %b %d %Y"))
-        if(not date in result):
-            result[date] = {}
-        if(not d["country"] in result[date]):
-                result[date][d["country"]] = []
-        result[date][d["country"]].append(d["filename"])
-
-    return result
 
 def _makeFakeJSON():
     fakeData = []
