@@ -1,3 +1,4 @@
+from math import sqrt, ceil
 from json import loads, dumps
 from os import path, listdir, remove
 from urllib2 import urlopen
@@ -16,6 +17,7 @@ class MediaFileDb(Model):
     waterType = CharField()
     mediaType = CharField()
     contentType = CharField()
+    contentText = BlobField()
     title = BlobField()
     date = CharField()
     country = CharField()
@@ -28,8 +30,8 @@ def populateFileListFromDbAndTag(dataBase, tag, mediaTypes):
     dataPath = "./data"
     for f in dataBase.select().where(MediaFileDb.waterType == tag):
         if(f.mediaType in mediaTypes):
-            if(f.mediaType is "text"):
-                currentFiles.append((f.mediaType, f.contentText))
+            if(f.mediaType == "text"):
+                currentFiles.append((f.mediaType, str(f.contentText)))
             else:
                 currentFiles.append((f.mediaType, dataPath+"/"+f.fileName))
 
@@ -56,7 +58,7 @@ def loadDbFromJSON(jsonFromServer):
 
     for d in [ e for e in fileInfoFromServer if isValidEntry(e)]:
         ## keep files consistent with server db
-        if(not path.isfile('./data/'+d['filename'])):
+        if((not d['filename'] == '') and not path.isfile('./data/'+d['filename'])):
             try:
                 f = open('./data/'+d['filename'], 'wb')
                 f.write(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_ARCHIVE+"/"+d['filename']).read())
@@ -123,8 +125,47 @@ def displayImage(fileName):
     imgRect = img.get_rect()
     pyScreen.blit(img,((background.get_width()-imgRect.width)/2 ,(background.get_height()-imgRect.height)/2))
     pygame.display.flip()
-def displayText(text):
-    pass
+def displayText(phrase, textColor=(255,255,255), bgndColor=(0,0,0)):
+    background = pygame.Surface(pyScreen.get_size())
+    background = background.convert()
+
+    font = pygame.font.Font("./data/arial.ttf", 200)
+    mRect = pygame.Rect((0,0), pyScreen.get_size())
+
+    screenArea = float(mRect.height*mRect.width)
+    phraseArea = float(font.size(phrase.decode('utf8'))[0]*font.size(phrase.decode('utf8'))[1])
+    newFontSize = 0.75*sqrt(screenArea/phraseArea)*font.size(phrase.decode('utf8'))[1];
+    font = pygame.font.Font("./data/arial.ttf", int(newFontSize))
+    fontHeight = font.size(phrase.decode('utf8'))[1]
+
+    y = mRect.top
+    i = 0
+    text = phrase
+    lineSpacing = -2
+
+    while (len(text) > 0):
+        # determine if the row of text will be outside our area
+        # this shouldn't happen !!!
+        if ((y+fontHeight) > mRect.bottom):
+            break
+
+        # determine maximum width of line
+        while ((font.size(text[:i])[0] < mRect.width) and (i < len(text))):
+            i += 1
+
+        # adjust the wrap to the last word
+        if (i < len(text)):
+            i = text.rfind(" ", 0, i) + 1
+
+        # render on surface
+        mSurface = font.render(text[:i].decode('utf8'), 1, textColor, bgndColor)
+        background.blit(mSurface, (mRect.left, y))
+        y += fontHeight + lineSpacing
+        text = text[i:]
+
+    pyScreen.blit(background, (0, (mRect.height-y)/2))
+    pygame.display.flip()
+
 
 def _makeFakeJSON():
     fakeData = []
@@ -184,7 +225,8 @@ def _makeFakeJSON():
                     "hassound":False})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
-                    "waterType":"rain",
+                    "waterType":"boiling",
+                    "filename":"",
                     "contentType":"water",
                     "mediaType":"text",
                     "contentText":"hello hello text test",

@@ -50,7 +50,7 @@ def loop():
         ## if a new date, populate list
         if(not inState is currentState):
             currentState = inState
-            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["image"])
+            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["image", "text"])
         lastMediaChangeTime = time()
 
         ## pick a file from list
@@ -62,7 +62,7 @@ def loop():
             nextFile = currentFileList.pop(randomIndex)
             ## was > 0, but now 0
             if(len(currentFileList) == 0):
-                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["image"])
+                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["image", "text"])
 
         stopAudio(audio)
         stopVideo(video)
