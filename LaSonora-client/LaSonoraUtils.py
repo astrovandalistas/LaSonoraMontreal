@@ -1,27 +1,26 @@
 from math import sqrt, ceil
 from json import loads, dumps
 from os import path, listdir, remove
-from urllib2 import urlopen
+from urllib2 import urlopen, quote
 from peewee import *
 from subprocess import Popen, PIPE
 import pygame
 from pyomxplayer import OMXPlayer
 
 SERVER_ADDRESS = "http://foocoop.mx:1337"
-ENDPOINT_CLOCK = "clock/currentddmmyy"
+ENDPOINT_WORD = "currentWord"
 ENDPOINT_FILEINFO = "media"
 ENDPOINT_ARCHIVE = "uploads"
 
 class MediaFileDb(Model):
+    country = CharField()
     fileName = CharField()
-    hasSound = BooleanField()
     waterType = CharField()
     mediaType = CharField()
     contentType = CharField()
+    hasSound = BooleanField()
     contentText = BlobField()
-    title = BlobField()
-    date = CharField()
-    country = CharField()
+
     class Meta:
         database = SqliteDatabase('./data/tmp.db')
 
@@ -47,36 +46,35 @@ def loadDbFromJSON(jsonFromServer):
     fileInfoFromServer = loads(jsonFromServer)
 
     def isValidEntry(e):
-        return ("date" in e and
-                "country" in e and
+        return ("country" in e and
                 "filename" in e and
                 "waterType" in e and
-                "contentText" in e and
-                "title" in e and
                 "mediaType" in e and
-                "contentType" in e and
-                "hassound" in e)
+                "contentType" in e)
 
     for d in [ e for e in fileInfoFromServer if isValidEntry(e)]:
+        d['filename'] = quote(d['filename'].encode('utf8'))
         ## keep files consistent with server db
         if((not d['filename'] == '') and not path.isfile('./data/'+d['filename'])):
             try:
                 f = open('./data/'+d['filename'], 'wb')
                 f.write(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_ARCHIVE+"/"+d['filename']).read())
-            except:
-                print "couldn't download %s" % str(SERVER_ADDRESS+"/"+ENDPOINT_ARCHIVE+"/"+d['filename'])
-            finally:
                 f.close()
+            except:
+                print "couldn't download %s" % SERVER_ADDRESS+"/"+ENDPOINT_ARCHIVE+"/"+d['filename']
+                f.close()
+                remove('./data/'+d['filename'])
 
-        MediaFileDb.create(fileName = d['filename'],
-                            hasSound = (d['hassound'] is "True"),
-                            waterType = d['waterType'],
-                            contentType = d['contentType'],
-                            title = d['title'],
-                            date = d['date'],
-                            contentText = d['contentText'],
-                            mediaType = d['mediaType'],
-                            country = d['country'])
+        if(path.isfile('./data/'+d['filename'])):
+            mHasSound = (d['hasSound'] is "True") if ("hasSound" in d) else False
+            mContextText = d['contentText'] if ("contentText" in d) else ""
+            MediaFileDb.create(country = d['country'],
+                                fileName = d['filename'],
+                                waterType = d['waterType'],
+                                mediaType = d['mediaType'],
+                                contentType = d['contentType'],
+                                hasSound = mHasSound,
+                                contentText = mContextText)
     return MediaFileDb
 
 def initScreen():
@@ -186,7 +184,7 @@ def _makeFakeJSON():
                     "contentType":"water",
                     "mediaType":"video",
                     "title":"foo video 2",
-                    "hassound":False})
+                    "hasSound":False})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "filename":"sound0.mp3",
@@ -195,7 +193,7 @@ def _makeFakeJSON():
                     "mediaType":"audio",
                     "contentText":"hello hello text test",
                     "title":"fooo audio",
-                    "hassound":True})
+                    "hasSound":True})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "filename":"sound1.mp3",
@@ -204,7 +202,7 @@ def _makeFakeJSON():
                     "mediaType":"audio",
                     "contentText":"hello hello text test",
                     "title":"fooo audio 1",
-                    "hassound":True})
+                    "hasSound":True})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "filename":"image0.jpg",
@@ -213,7 +211,7 @@ def _makeFakeJSON():
                     "mediaType":"image",
                     "contentText":"hello hello text test",
                     "title":"hey hey hey image",
-                    "hassound":False})
+                    "hasSound":False})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "filename":"image1.jpg",
@@ -222,7 +220,7 @@ def _makeFakeJSON():
                     "mediaType":"image",
                     "contentText":"hello hello text test",
                     "title":"hey hey hey image",
-                    "hassound":False})
+                    "hasSound":False})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "filename":"image2.jpg",
@@ -231,7 +229,7 @@ def _makeFakeJSON():
                     "mediaType":"image",
                     "contentText":"hello hello text test",
                     "title":"hey hey hey image",
-                    "hassound":False})
+                    "hasSound":False})
     fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)',
                     "country":"brazil",
                     "waterType":"boiling",
@@ -240,25 +238,6 @@ def _makeFakeJSON():
                     "mediaType":"text",
                     "contentText":"hello hello text test",
                     "title":"foo video 4",
-                    "hassound":False})
-
-    return dumps(fakeData)
-
-def _makeFakeJSON1():
-    fakeData = []
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "country":"brazil", "filename":"bfoo.txt"})
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "country":"brazil", "filename":"bhahaha.mp3"})
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "country":"mexico", "filename":"mdjdjdj.wav"})
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "country":"mexico", "filename":"mfoo.txt"})
-    fakeData.append({"date": 'Wed Jan 01 2010 00:00:00 GMT-0500 (CDT)', "country":"mexico", "filename":"mhahaha.mp3"})
-
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"brazil", "filename":"b1djdjdj.wav"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"brazil", "filename":"b1foo.txt"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"brazil", "filename":"b1hahaha.mp3"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"mexico", "filename":"m1djdjdj.wav"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"mexico", "filename":"m1hahaha.mp3"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"russia", "filename":"r1djdjdj.wav"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"russia", "filename":"r1foo.txt"})
-    fakeData.append({"date": 'Wed Feb 21 2012 00:00:00 GMT-0500 (CDT)', "country":"russia", "filename":"r1hahaha.mp3"})
+                    "hasSound":False})
 
     return dumps(fakeData)
