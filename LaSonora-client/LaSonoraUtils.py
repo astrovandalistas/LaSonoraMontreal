@@ -66,7 +66,7 @@ def loadDbFromJSON(jsonFromServer):
                 remove('./data/'+d['filename'])
 
         if(path.isfile('./data/'+d['filename']) or d['mediaType'] == "text"):
-            mHasSound = (d['hasSound'] is "True") if ("hasSound" in d) else False
+            mHasSound = (d['hasSound'] == "true") if ("hasSound" in d) else False
             mContextText = d['contentText'] if ("contentText" in d) else ""
             MediaFileDb.create(country = d['country'],
                                 fileName = d['filename'],
@@ -75,6 +75,16 @@ def loadDbFromJSON(jsonFromServer):
                                 contentType = d['contentType'],
                                 hasSound = mHasSound,
                                 contentText = mContextText)
+            # if video has sound, also add to database as sound entry
+            if(d['mediaType'] == "video" and mHasSound):
+                MediaFileDb.create(country = d['country'],
+                                    fileName = d['filename'],
+                                    waterType = d['waterType'],
+                                    mediaType = "audio",
+                                    contentType = d['contentType'],
+                                    hasSound = False,
+                                    contentText = mContextText)
+
     return MediaFileDb
 
 def initScreen():
@@ -121,7 +131,7 @@ def stopVideo(videoPlayer):
         except:
             print "couldn't stop omxplayer. already stopped?"
 def playAudio(fileName):
-    return Popen(["mplayer", fileName], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    return Popen(["mplayer", "-novideo", fileName], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 def playVideo(fileName, db):
     p = OMXPlayer(fileName)
     p.toggle_pause()
