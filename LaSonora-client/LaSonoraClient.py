@@ -42,7 +42,8 @@ def loop():
 
     if(time() - lastMediaChangeTime > MEDIA_CHANGE_FREQUENCY):
         ## make request to server, get clock
-        inState = loads(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_WORD).read())
+        inState = urlopen(SERVER_ADDRESS+"/"+ENDPOINT_WORD).read()
+        print inState
 
         ## if a new date, populate list
         if(not inState is currentState):
