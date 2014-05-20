@@ -10,6 +10,7 @@ from random import randrange
 from time import time, sleep
 
 MEDIA_CHANGE_FREQUENCY = 5
+MEDIA_TO_PLAY = ["text", "audio", "video", "image"]
 
 def _checkEvent():
     for event in pygame.event.get():
@@ -48,7 +49,7 @@ def loop():
         ## if a new date, populate list
         if(not inState == currentState):
             currentState = inState
-            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["text", "audio", "video", "image"])
+            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, MEDIA_TO_PLAY)
         lastMediaChangeTime = time()
 
         ## pick a file from list
@@ -60,7 +61,7 @@ def loop():
             nextFile = currentFileList.pop(randomIndex)
             ## was > 0, but now 0
             if(len(currentFileList) == 0):
-                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["text", "audio", "video", "image"])
+                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, MEDIA_TO_PLAY)
 
         stopAudio(audio)
         stopVideo(video)
