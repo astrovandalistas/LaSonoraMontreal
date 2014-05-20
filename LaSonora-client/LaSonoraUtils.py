@@ -65,7 +65,7 @@ def loadDbFromJSON(jsonFromServer):
                 f.close()
                 remove('./data/'+d['filename'])
 
-        if(path.isfile('./data/'+d['filename'])):
+        if(path.isfile('./data/'+d['filename']) or d['mediaType'] == "text"):
             mHasSound = (d['hasSound'] is "True") if ("hasSound" in d) else False
             mContextText = d['contentText'] if ("contentText" in d) else ""
             MediaFileDb.create(country = d['country'],
