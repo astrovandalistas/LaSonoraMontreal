@@ -31,7 +31,7 @@ def populateFileListFromDbAndTag(dataBase, tag, mediaTypes):
     for f in dataBase.select().where(MediaFileDb.waterType == tag):
         if(f.mediaType in mediaTypes):
             if(f.mediaType == "text"):
-                currentFiles.append((f.mediaType, str(f.contentText)))
+                currentFiles.append((f.mediaType, f.contentText.encode('utf8')))
             else:
                 currentFiles.append((f.mediaType, dataPath+"/"+f.fileName))
 
