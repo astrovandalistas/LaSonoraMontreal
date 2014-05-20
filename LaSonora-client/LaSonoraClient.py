@@ -46,7 +46,7 @@ def loop():
         print inState
 
         ## if a new date, populate list
-        if(not inState is currentState):
+        if(not inState == currentState):
             currentState = inState
             currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["text", "audio", "video", "image"])
         lastMediaChangeTime = time()
