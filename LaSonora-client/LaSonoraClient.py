@@ -9,7 +9,7 @@ from urllib2 import urlopen
 from random import randrange
 from time import time, sleep
 
-MEDIA_CHANGE_FREQUENCY = 3
+MEDIA_CHANGE_FREQUENCY = 5
 
 def _checkEvent():
     for event in pygame.event.get():
@@ -48,7 +48,7 @@ def loop():
         ## if a new date, populate list
         if(not inState is currentState):
             currentState = inState
-            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["video"])
+            currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["text", "audio", "video", "image"])
         lastMediaChangeTime = time()
 
         ## pick a file from list
@@ -60,7 +60,7 @@ def loop():
             nextFile = currentFileList.pop(randomIndex)
             ## was > 0, but now 0
             if(len(currentFileList) == 0):
-                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["video"])
+                currentFileList = populateFileListFromDbAndTag(fileInfoDb, currentState, ["text", "audio", "video", "image"])
 
         stopAudio(audio)
         stopVideo(video)
