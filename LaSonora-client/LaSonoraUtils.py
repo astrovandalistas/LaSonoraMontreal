@@ -8,7 +8,7 @@ import pygame
 from pyomxplayer import OMXPlayer
 
 SERVER_ADDRESS = "http://foocoop.mx:1337"
-ENDPOINT_WORD = "currentWord"
+ENDPOINT_WORD = "word/currentWord"
 ENDPOINT_FILEINFO = "media"
 ENDPOINT_ARCHIVE = "uploads"
 
@@ -19,7 +19,7 @@ class MediaFileDb(Model):
     mediaType = CharField()
     contentType = CharField()
     hasSound = BooleanField()
-    contentText = BlobField()
+    contentText = CharField()
 
     class Meta:
         database = SqliteDatabase('./data/tmp.db')
