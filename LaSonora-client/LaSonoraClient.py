@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from LaSonoraUtils import populateFileListFromDbAndTag, loadDbFromJSON, _makeFakeJSON
-from LaSonoraUtils import SERVER_ADDRESS, ENDPOINT_CLOCK, ENDPOINT_FILEINFO, ENDPOINT_ARCHIVE
+from LaSonoraUtils import SERVER_ADDRESS, ENDPOINT_WORD, ENDPOINT_FILEINFO, ENDPOINT_ARCHIVE
 from LaSonoraUtils import initScreen, stopAudio, stopVideo, clearScreen, playAudio, playVideo, displayImage, displayText
 import pygame
 from json import loads
@@ -22,8 +22,7 @@ def setup():
     global lastMediaChangeTime, currentState, currentFileList
     global fileInfoDb
 
-    #fileInfoDb = loadDbFromJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO).read())
-    fileInfoDb = loadDbFromJSON(_makeFakeJSON())
+    fileInfoDb = loadDbFromJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO).read())
 
     video = None
     audio = None
@@ -43,8 +42,7 @@ def loop():
 
     if(time() - lastMediaChangeTime > MEDIA_CHANGE_FREQUENCY):
         ## make request to server, get clock
-        #inState = loads(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_CLOCK).read())
-        inState = "boiling"
+        inState = loads(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_WORD).read())
 
         ## if a new date, populate list
         if(not inState is currentState):
@@ -66,6 +64,9 @@ def loop():
         stopAudio(audio)
         stopVideo(video)
         clearScreen()
+
+        if(nextFile is ()):
+            return
 
         if(nextFile[0] == "audio"):
             audio = playAudio(nextFile[1])
