@@ -45,6 +45,7 @@ def loop():
     _checkEvent()
 
     if(time() - lastMediaChangeTime > MEDIA_CHANGE_FREQUENCY):
+        inState = "ice"
         try:
             ## make request to server, get clock
             inState = urlopen(SERVER_ADDRESS+"/"+ENDPOINT_WORD, timeout=2).read()
