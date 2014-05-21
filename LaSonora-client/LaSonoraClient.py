@@ -9,7 +9,7 @@ from urllib2 import urlopen
 from random import randrange
 from time import time, sleep
 
-MEDIA_CHANGE_FREQUENCY = 5
+MEDIA_CHANGE_FREQUENCY = 15
 MEDIA_TO_PLAY = ["text", "audio", "video", "image"]
 
 def _checkEvent():
