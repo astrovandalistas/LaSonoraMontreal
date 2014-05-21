@@ -45,12 +45,12 @@ def loop():
     _checkEvent()
 
     if(time() - lastMediaChangeTime > MEDIA_CHANGE_FREQUENCY):
-        ## make request to server, get clock
         try:
+            ## make request to server, get clock
             inState = urlopen(SERVER_ADDRESS+"/"+ENDPOINT_WORD, timeout=2).read()
+            print inState
         except:
             print "can't open url"
-        print inState
 
         ## if a new date, populate list
         if(not inState == currentState):
