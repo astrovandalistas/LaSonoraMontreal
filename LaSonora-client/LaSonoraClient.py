@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from LaSonoraUtils import populateFileListFromDbAndTag, loadDbFromJSON, _makeFakeJSON
-from LaSonoraUtils import SERVER_ADDRESS, ENDPOINT_WORD, ENDPOINT_FILEINFO, ENDPOINT_ARCHIVE
+from LaSonoraUtils import SERVER_ADDRESS, ENDPOINT_WORD, ENDPOINT_WORD_INIT, ENDPOINT_FILEINFO, ENDPOINT_ARCHIVE
 from LaSonoraUtils import initScreen, stopAudio, stopVideo, clearScreen, playAudio, playVideo, displayImage, displayText
 import pygame
 from json import loads
@@ -21,7 +21,7 @@ def _checkEvent():
 def setup():
     global video, audio
     global lastMediaChangeTime, currentState, currentFileList
-    global fileInfoDb
+    global fileInfoDb, lastNonFrozenStateTime
 
     try:
         fileInfoDb = loadDbFromJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO, timeout=2).read())
@@ -35,23 +35,33 @@ def setup():
 
     lastMediaChangeTime = time()-MEDIA_CHANGE_FREQUENCY
     currentState = "ice"
+    lastNonFrozenStateTime = time()
     currentFileList = []
 
 def loop():
     global video, audio
     global lastMediaChangeTime, currentState, currentFileList
-    global fileInfoDb
+    global fileInfoDb, lastNonFrozenStateTime
 
     _checkEvent()
 
     if(time() - lastMediaChangeTime > MEDIA_CHANGE_FREQUENCY):
-        inState = "ice"
+        if(time()-lastNonFrozenStateTime > 45):
+            try:
+                response = urlopen(SERVER_ADDRESS+"/"+ENDPOINT_WORD_INIT, timeout=2).read()
+            except:
+                print "can't do word init"
+
         try:
             ## make request to server, get clock
             inState = urlopen(SERVER_ADDRESS+"/"+ENDPOINT_WORD, timeout=2).read()
             print inState
         except:
+            inState = "frozen"
             print "can't open url"
+
+        if(not inState == "frozen"):
+            lastNonFrozenStateTime = time()
 
         ## if a new date, populate list
         if(not inState == currentState):

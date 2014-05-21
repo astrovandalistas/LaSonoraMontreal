@@ -19,6 +19,7 @@ except:
 
 SERVER_ADDRESS = "http://foocoop.mx:1337"
 ENDPOINT_WORD = "word/currentWord"
+ENDPOINT_WORD_INIT = "word/init"
 ENDPOINT_FILEINFO = "media"
 ENDPOINT_ARCHIVE = "uploads"
 
