@@ -14,6 +14,8 @@ except:
             pass
         def toggle_pause(self):
             pass
+        def stop(self):
+            pass
 
 SERVER_ADDRESS = "http://foocoop.mx:1337"
 ENDPOINT_WORD = "word/currentWord"
@@ -99,8 +101,7 @@ def initScreen():
     global pyScreen, font, mSurface, mSurfaceRect
     pygame.init()
 
-    #pyScreen = pygame.display.set_mode((0, 0), (pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE))
-    pyScreen = pygame.display.set_mode((0, 0), (pygame.DOUBLEBUF|pygame.HWSURFACE))
+    pyScreen = pygame.display.set_mode((0, 0), (pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE))
     pygame.display.set_caption('LaSonora')
     pygame.mouse.set_visible(False)
 
