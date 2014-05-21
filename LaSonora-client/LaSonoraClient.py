@@ -4,7 +4,7 @@ from LaSonoraUtils import populateFileListFromDbAndTag, loadDbFromJSON, _makeFak
 from LaSonoraUtils import SERVER_ADDRESS, ENDPOINT_WORD, ENDPOINT_WORD_INIT, ENDPOINT_FILEINFO, ENDPOINT_ARCHIVE
 from LaSonoraUtils import initScreen, stopAudio, stopVideo, clearScreen, playAudio, playVideo, displayImage, displayText
 import pygame
-from json import loads
+from json import loads, dumps
 from urllib2 import urlopen
 from random import randrange
 from time import time, sleep
@@ -26,6 +26,7 @@ def setup():
     try:
         fileInfoDb = loadDbFromJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO, timeout=2).read())
     except:
+        fileInfoDb = loadDbFromJSON(dumps({}))
         print "can't open %s" % (SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO)
 
     video = None
@@ -49,6 +50,7 @@ def loop():
         if(time()-lastNonFrozenStateTime > 45):
             try:
                 response = urlopen(SERVER_ADDRESS+"/"+ENDPOINT_WORD_INIT, timeout=2).read()
+                lastNonFrozenStateTime = time()
             except:
                 print "can't do word init"
 
