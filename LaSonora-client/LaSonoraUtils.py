@@ -143,8 +143,12 @@ def stopVideo(videoPlayer):
 def playAudio(fileName):
     return Popen(["mplayer", "-novideo", fileName], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 def playVideo(fileName, db):
-    p = OMXPlayer(fileName)
-    p.toggle_pause()
+    try:
+        p = OMXPlayer(fileName)
+        p.toggle_pause()
+    except:
+        print "problem playing video"
+        p = None
     return p
 def displayImage(fileName):
     background = pygame.Surface(pyScreen.get_size())
