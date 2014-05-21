@@ -26,7 +26,7 @@ def setup():
     try:
         fileInfoDb = loadDbFromJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO, timeout=2).read())
     except:
-        print "can't open url"
+        print "can't open %s" % (SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO)
 
     video = None
     audio = None
@@ -58,7 +58,7 @@ def loop():
             print inState
         except:
             inState = "frozen"
-            print "can't open url"
+            print "can't open %s" % (SERVER_ADDRESS+"/"+ENDPOINT_WORD)
 
         if(not inState == "frozen"):
             lastNonFrozenStateTime = time()
