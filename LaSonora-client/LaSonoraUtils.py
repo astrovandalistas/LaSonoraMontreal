@@ -141,7 +141,7 @@ def stopVideo(videoPlayer):
         except:
             print "couldn't stop omxplayer. already stopped?"
 def playAudio(fileName):
-    return Popen(["mplayer", "-novideo", fileName], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    return Popen(["mplayer", "-af volume=-20", "-novideo", fileName], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 def playVideo(fileName, db):
     try:
         p = OMXPlayer(fileName)
