@@ -5,7 +5,15 @@ from urllib2 import urlopen, quote
 from peewee import *
 from subprocess import Popen, PIPE
 import pygame
-from pyomxplayer import OMXPlayer
+
+try:
+    from pyomxplayer import OMXPlayer
+except:
+    class OMXPlayer:
+        def __init__(self, filename):
+            pass
+        def toggle_pause(self):
+            pass
 
 SERVER_ADDRESS = "http://foocoop.mx:1337"
 ENDPOINT_WORD = "word/currentWord"
@@ -58,7 +66,7 @@ def loadDbFromJSON(jsonFromServer):
         if((not d['filename'] == '') and not path.isfile('./data/'+d['filename'])):
             try:
                 f = open('./data/'+d['filename'], 'wb')
-                f.write(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_ARCHIVE+"/"+d['filename']).read())
+                f.write(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_ARCHIVE+"/"+d['filename'], timeout=2).read())
                 f.close()
             except:
                 print "couldn't download %s" % SERVER_ADDRESS+"/"+ENDPOINT_ARCHIVE+"/"+d['filename']

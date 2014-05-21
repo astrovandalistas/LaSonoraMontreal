@@ -23,7 +23,10 @@ def setup():
     global lastMediaChangeTime, currentState, currentFileList
     global fileInfoDb
 
-    fileInfoDb = loadDbFromJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO).read())
+    try:
+        fileInfoDb = loadDbFromJSON(urlopen(SERVER_ADDRESS+"/"+ENDPOINT_FILEINFO, timeout=2).read())
+    except:
+        print "can't open url"
 
     video = None
     audio = None
@@ -43,7 +46,10 @@ def loop():
 
     if(time() - lastMediaChangeTime > MEDIA_CHANGE_FREQUENCY):
         ## make request to server, get clock
-        inState = urlopen(SERVER_ADDRESS+"/"+ENDPOINT_WORD).read()
+        try:
+            inState = urlopen(SERVER_ADDRESS+"/"+ENDPOINT_WORD, timeout=2).read()
+        except:
+            print "can't open url"
         print inState
 
         ## if a new date, populate list
