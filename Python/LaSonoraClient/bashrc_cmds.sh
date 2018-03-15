@@ -2,7 +2,7 @@
 isrun=`ps -u pi | grep python | wc -l`
 if [ $isrun -lt 1 ] 
 then 
-    cd /home/pi/Dev/LaSonoraMontreal/LaSonora-client
+    cd /home/pi/Dev/LaSonoraTelematica/Python/LaSonoraClient
     export DISPLAY=":0.0"
     startx &
     rm -rf ./stop.sh
