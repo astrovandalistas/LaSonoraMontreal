@@ -1,0 +1,259 @@
+<script type="text/javascript" src= "/js/jquery.min.js"></script>
+
+
+
+<div id="backend" class="fourth">
+    <form ng-submit="submitMedia( mediaData )">
+    
+      <div class="">
+        <div>
+          
+          <label for="title">Title <span class="req">*</span></label>
+</br>
+          <input type="text" name="title" ng-model="mediaData.title"/>
+</br>
+
+          <label for="description">Description (what does the media show?)</label>
+</br>
+          <textarea name="description" ng-model="mediaData.description"></textarea>
+</br>
+
+          <label for="country">Country</label>
+</br>
+
+
+<select style="width:200px" name="country" ng-model="mediaData.country" ng-options="country.code as country.name for country in countries"></select>
+
+
+</br>
+
+
+<label for="mediatype">Media Type</label>
+</br>
+<input type="radio" ng-model="mediaData.mediaType" name="mediatype" value="video">Video</br>
+<input type="radio" ng-model="mediaData.mediaType" name="mediatype" value="audio">Audio</br>
+<input type="radio" ng-model="mediaData.mediaType" name="mediatype" value="text">Text</br>
+<input type="radio" ng-model="mediaData.mediaType" name="mediatype" value="image">Image</br>
+
+
+</br>
+
+
+<label for="contentText">If media type is text, write it here:</label>
+</br>
+
+<textarea name="contentText" ng-model="mediaData.contentText"></textarea>
+</br>
+
+
+
+<label for="contentType">Content Type</label>
+</br>
+<input type="radio" ng-model="mediaData.contentType" name="contentType" value="water">Water</br>
+<input type="radio" ng-model="mediaData.contentType" name="contentType" value="people">People</br>
+</br>
+
+<label for="">Water type</label>
+</br>
+
+<select style="width:200px" ng-model="mediaData.waterType" ng-options="w.value as w.value group by w.group for w in waterTypes"></select>
+
+<label for="hasSound">Has sound? (Should the audio of this file be played back together with the video image?)</label>
+</br>
+<input type="checkbox" name="hasSound" ng-model="mediaData.hasSound"> 
+
+</br>
+
+
+
+
+
+          <label for="event">Event / Demonstration</label>
+</br>          <input type="text" name="event" ng-model="mediaData.event"/>
+</br>
+          <label for="topic">Topic</label>
+</br>
+          <input type="text" name="topic" ng-model="mediaData.topic"/>
+</br>
+          <label for="keywords">Keywords</label>
+</br>
+          <input type="text" name="keywords" ng-model="mediaData.keywords"/>
+</br>
+
+
+
+
+
+
+
+
+
+
+</br>
+
+
+
+
+
+        </div> 
+      </div> 
+  
+    <div class="">
+      <div style="display:inline-block; min-height:290px;">
+        <datetimepicker data-ng-model="mediaData.date" data-datetimepicker-config="{minView: 'day'}"></datetimepicker>
+      </div>
+    </div>
+
+
+    <div class="">
+
+      
+      <script src="components/ng-file-upload/angular-file-upload-shim.min.js"></script> 
+      <script src="js/angular/angular.min.js"></script>
+      <script src="components/ng-file-upload/angular-file-upload.min.js"></script> 
+
+      <div id="upload" ng-controller="UploadCtrl">
+
+        <div class="upload-div">
+          
+
+          <input type="file" name="singlefile" ng-file-select="onFileSelect($files)" ng-click="resetInputFile()">
+          <br/>
+          <!--
+          <!            or multiple files: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="file" name="multifiles" ng-file-select="onFileSelect($files)" multiple ng-click="resetInputFile()">
+          -->
+          <br/>
+          <br/>
+          <div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files);" ng-file-drop-available="dropSupported=true">or drop files here</div>
+          <div ng-show="!dropSupported">HTML5 Drop File is not supported on this browser</div>
+          <br/>
+          <input type="checkbox" ng-model="uploadRightAway">Upload right away
+          <br/>
+
+          
+          <div class="err" ng-show="errorMsg != null">{{errorMsg}}</div>
+          <br/>
+                Progress:
+          <br/>
+          <br/>
+          <div ng-show="selectedFiles != null">
+            <div class="sel-file" ng-repeat="f in selectedFiles">
+                                {{($index + 1) + '.'}}
+              <img ng-show="dataUrls[$index]" ng-src="{{dataUrls[$index]}}">
+              <button class="button" ng-click="start($index)" ng-show="progress[$index] < 0">Start</button>
+              <span class="progress" ng-show="progress[$index] >= 0">                                           
+                <div style="width:{{progress[$index]}}%">{{progress[$index]}}%</div>
+              </span>                           
+              <button class="button" ng-click="abort($index)" ng-show="hasUploader($index) && progress[$index] < 100">Abort</button>
+                                {{f.name}} - size: {{f.size}}B - type: {{f.type}}
+            </div>
+          </div>
+          <div class="response" ng-show="uploadResult.length > 0">
+                        Server Response:
+            <ul>
+              <li ng-repeat="result in uploadResult">
+                <ul>
+                  <li ng-repeat="item in result.result">
+                    <div data-ng-show="item.filename">file name: {{item.filename}}</div>
+                    <!--
+                    <div data-ng-show="item.fieldName">name: {{item.fieldName}}</div>
+                    <div data-ng-show="item.size">size on the serve: {{item.size}}</div>
+	            <div data-ng-show="item.value">value: {{item.value}}</div>
+                    -->
+                  </li>
+	        </ul>
+	        <div data-ng-show="result.requestHeaders" class="reqh">request headers: {{result.requestHeaders}}</div>
+	      </li>
+            </ul>
+          </div>
+        </div>
+
+          <label for="filename">Filename</label>
+          <input type="text" name="filename" ng-model="mediaData.filename"/>
+
+
+      </div>
+
+</div> 
+
+
+<!--    <button type="submit" ng-click="reset(); form.$setPristine()">Submit</button> -->
+    <button type="submit">Submit</button>
+
+
+    </form>
+</div>
+
+
+
+
+<div class="whole" id="filtros">
+  <h3>Filters:</h3>
+
+  <div class="fourth">
+
+    
+    <label for="filter-country">Country</label></br>
+    <input type="text" ng-model="countryfilter"></br>
+
+    <label for="filter-country">Country</label></br>
+    <select name="filter-country" ng-model="mediaItem.country" ng-options="mediaItem.country as mediaItem.country for mediaItem in media | unique:'country'" >
+    <option value=""></option>
+  </select></br>
+
+  
+
+
+    <label for="filter-waterType">WaterType</label></br>
+    <select name="filter-waterType" ng-model="mediaItem.waterType" ng-options="mediaItem.waterType as mediaItem.waterType for mediaItem in media | unique:'waterType'" >
+      <option value=""></option>
+    </select></br>
+
+
+        
+  </div>
+
+  
+</div>
+
+
+
+
+
+
+
+
+<div id="list" class="fourth3"  >
+  <div  class="fourth mediaItem" ng-repeat="mediaItem in media | filter: mediaItem.country | filter:mediaItem.waterType" >
+    
+  <h3>{{mediaItem.title}}</h3>
+  
+  <h5>Description</h5>{{mediaItem.description}}</br>
+  
+  <h5>Filename</h5><a href="uploads/{{mediaItem.filename}}">{{mediaItem.filename}}</a></br>
+  <h5>Country</h5>{{mediaItem.country}}</br>
+  <h5>Event</h5>{{mediaItem.event}}</br>
+  <h5>Topic</h5>{{mediaItem.topic}}</br>
+  <h5>Keywords</h5>{{mediaItem.keywords}}</br>
+  <h5>Date</h5>{{mediaItem.date}}</br>
+  <h5>Content Text</h5>{{mediaItem.contentText}}</br>
+  <h5>Has Sound?</h5>{{mediaItem.hasSound}}</br>
+  <h5>Media Type</h5>{{mediaItem.mediaType}}</br>
+  <h5>Content Type</h5>{{mediaItem.contentType}}</br>
+  <h5>Water Type</h5>{{mediaItem.waterType}}</br>
+  
+  <a href="#" ng-click="deleteMedia(mediaItem.id)" ><h6>Eliminar</h6></a></br>
+  
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,81 @@
+<script src="js/angular/angular.min.js"></script>
+<script type="text/javascript" src= "/js/jquery.min.js"></script>
+
+
+
+      
+      <script src="components/ng-file-upload/angular-file-upload-shim.min.js"></script> 
+      <script src="components/ng-file-upload/angular-file-upload.min.js"></script> 
+
+
+
+
+<div style="background-color:#fa0; padding:100px"   id="data">
+<h1>data:</h1>
+<div class="fourth " ng-repeat="d in tstdata" >
+{{d.a}}
+</div>
+</div>
+
+
+
+
+<div id="list" class="whole"  >
+  <div  class="fourth mediaItem" ng-repeat="mediaItem in media | filter:mediaItem.country" >
+    
+  <h3>{{mediaItem.title}}</h3>
+  
+  <h5>Descripcion</h5>{{mediaItem.description}}</br>
+
+  <h5>Filename</h5><a href="uploads/{{mediaItem.filename}}">{{mediaItem.filename}}</a></br>
+  <h5>Country</h5>{{mediaItem.country}}</br>
+  <h5>Event</h5>{{mediaItem.event}}</br>
+  <h5>Topic</h5>{{mediaItem.topic}}</br>
+  <h5>Keywords</h5>{{mediaItem.keywords}}</br>
+  <h5>Date</h5>{{mediaItem.date}}</br>
+  
+  <a href="#" ng-click="deleteMedia(mediaItem.id)" ><h6>Eliminar</h6></a></br>
+  
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+
+<div class="fourth container" ng-view>
+<wordcloud>
+<word>This</word>
+<word>is</word>
+<word>a</word>
+<word>Subelement</word>
+<word>Test</word>
+<word>for</word>
+<word>demonstrating</word>
+<word>this</word>
+<word>Feature</word>
+</wordcloud>
+<script src="components/angular-d3/build/angular-d3.js"></script>
+
+
+</div>
+
+
+-->
+
+<!-- Scripts -->
+
+
+

@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "private": true,
+  "version": "0.0.0",
+  "description": "a Sails application",
+  "dependencies": {
+    "archiver": "^0.10.0-alpha",
+    "bower": "latest",
+    "ejs": "2.5.5",
+    "express": "^4.16.2",
+    "grunt": "^0.4.1",
+    "grunt-bower-task": "^0.3.4",
+    "optimist": "^0.3.4",
+    "request": "^2.27.0",
+    "sails": "^0.9.7",
+    "sails-disk": "~0.9.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "debug": "node debug app.js"
+  },
+  "main": "app.js",
+  "repository": "",
+  "author": "",
+  "license": ""
+}

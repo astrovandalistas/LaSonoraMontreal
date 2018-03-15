@@ -1,0 +1,45 @@
+<script type="text/javascript" src= "/js/jquery.min.js"></script>
+
+
+<script src="components/ng-file-upload/angular-file-upload-shim.min.js"></script> 
+<script src="js/angular/angular.min.js"></script>
+<script src="components/ng-file-upload/angular-file-upload.min.js"></script>
+<div id="up" class="whole" ng-controller="UploadCtrl"></div>
+
+  
+<div id="words" class="whole" ng-controller="VisualizationCtrl" >
+  <!--  
+  <div id="wordlist" class="" ng-repeat="word in words" >
+    {{word.waterType}}
+    <li id="" class="keywordlist" ng-repeat="keyword in word.keywords" >
+{{keyword}}
+    </li>
+  </div>
+  -->
+
+
+  <div id="wordlist" class="" ng-repeat="word in wordsArray" >
+    <div class="wordstage" ng-repeat="wrd in word" >
+
+      <div class="word" ng-class="{selected: w.value==selectedWord}" ng-repeat="w in wrd" >
+    {{w.value}}
+        
+        <li id="" ng-repeat="keyword in w.array" >
+      {{keyword}}
+        </li>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+

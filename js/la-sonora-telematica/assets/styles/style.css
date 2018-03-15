@@ -1,0 +1,99 @@
+@charset "UTF-8";
+html, body {
+  height: 100%; }
+
+.bbox, .box, .floater > div, .third > div, .twothirds > div, .fourth > div, .fourth3 > div, .half > div, .mediaItem, .box div, .mediaItem div {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  /* Firefox */ }
+
+.box, .floater > div, .mediaItem > div, .third > div, .twothirds > div, .fourth > div, .fourth3 > div, .half > div, .mediaItem {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px; }
+
+.col, form {
+  display: inline-block;
+  height: 100%;
+  overflow: auto;
+  padding: 20px;
+  margin-bottom: 20px;
+  -webkit-box-sizing: border-box;
+  /* Android ≤ 2.3, iOS ≤ 4 */
+  -moz-box-sizing: border-box;
+  /* Firefox ≤ 28 */
+  box-sizing: border-box;
+  /* Chrome, Firefox 29+, IE 8+, Opera, Safari 5.1 */ }
+
+.floater, .mediaItem, .third, .twothirds, .fourth, .fourth3, .half {
+  float: left; }
+  .floater > div, .mediaItem > div, .third > div, .twothirds > div, .fourth > div, .fourth3 > div, .half > div {
+    padding: 15px;
+    margin: 15px; }
+
+.mediaItem p {
+  width: 50;
+  float: left; }
+.mediaItem h5 {
+  font-weight: bold !important; }
+
+.third {
+  width: 30%; }
+
+.twothirds {
+  width: 60%; }
+
+.fourth {
+  width: 25%; }
+
+.fourth3 {
+  width: 75%; }
+
+.half {
+  width: 50%; }
+
+p {
+  float: none; }
+
+#backend .third {
+  height: 100%;
+  display: inline-block; }
+
+#upload .sel-file img {
+  float: left;
+  width: 100px;
+  height: 100px;
+  padding-right: 10px; }
+#upload element.style {
+  width: 100%; }
+#upload .progress div {
+  font-size: smaller;
+  background: #ddd;
+  width: 0; }
+
+#list {
+     /*
+ height:100%;
+	    overflow-y:auto;
+*/ }
+
+.req {
+  color: red;
+  font-weight: bold; }
+
+.wordstage {
+  border: 1px solid #eee;
+  width: 13%;
+  float: left;
+  box-sizing: border-box; }
+  .wordstage .selected {
+    border: 3px solid #fa0; }
+  .wordstage .word {
+    margin: 20px;
+    background-color: #eee;
+    font-size: 15px; }
+    .wordstage .word li {
+      font-size: 11px;
+      color: #666;
+      list-style: none; }
