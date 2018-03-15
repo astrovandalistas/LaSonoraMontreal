@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <title>prueba video html5</title>        
+        <script src="js/jquery-1.11.1.min.js"></script>
+        <style type="text/css">
+         
+         .vidbtn {
+           margin:10px;
+           
+         }
+         
+         
+         .vid_btn {
+           background: #3498db;
+           background-image: -webkit-linear-gradient(top, #3498db, #165c87);
+           background-image: -moz-linear-gradient(top, #3498db, #165c87);
+           background-image: -ms-linear-gradient(top, #3498db, #165c87);
+           background-image: -o-linear-gradient(top, #3498db, #165c87);
+           background-image: linear-gradient(to bottom, #3498db, #165c87);
+           -webkit-border-radius: 28;
+           -moz-border-radius: 28;
+           border-radius: 28px;
+           font-family: Arial;
+           color: #ffffff;
+           font-size: 20px;
+           padding: 10px 20px 10px 20px;
+           text-decoration: none;
+           float:left;
+         }
+
+         .vid_btn:hover {
+           background: #3cb0fd;
+           background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+           background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+           background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+           background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+           background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+           text-decoration: none;
+         }
+
+        </style>
+    </head>
+    <body>
+        <div id="controles">
+            <div class="vid_btn">1</div>
+            <div class="vid_btn">2</div>
+        </div>
+        <video controls>
+          <source src=vd/vd1.mp4 type=video/mp4>
+          <source src=vd/vd1.ogv type=video/ogg>
+          
+        </video>
+
+        <script type="text/javascript">
+         var mp4 = Array('vd1.mp4','vd2.mp4');
+         var ogv = Array('vd1.ogv','vd2.ogv');
+         
+         jQuery(document).ready(function(){
+           
+           $('.vid_btn').click(function(){
+             var i = $(this).index();
+             var vid = $("video");
+             var file = 'vd/'+mp4[i];
+             console.log(file);
+             vid.find('source').attr('src', file);
+             vid[0].load();             
+           });
+           
+         });
+        </script>
+    </body>
+</html>
+
